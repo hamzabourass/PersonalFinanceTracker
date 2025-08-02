@@ -17,7 +17,7 @@ services:
   api:
     build:
       context: .
-      dockerfile: src/PersonalFinanceTracker.API/Dockerfile
+      dockerfile: Dockerfile
     container_name: finance-api
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
@@ -27,6 +27,7 @@ services:
     depends_on:
       - postgres
     restart: unless-stopped
+
 
 volumes:
   postgres_data:
