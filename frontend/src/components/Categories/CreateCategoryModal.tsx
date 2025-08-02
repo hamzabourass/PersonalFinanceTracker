@@ -103,7 +103,6 @@ const CreateCategoryModal: React.FC<CreateCategoryModalProps> = ({ isOpen, onClo
               leaveTo="opacity-0 scale-95"
             >
               <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-8 text-left align-middle shadow-2xl transition-all border border-gray-100">
-                {/* Header */}
                 <div className="flex items-center justify-between mb-6">
                   <Dialog.Title className="text-xl font-semibold leading-6 text-gray-900">
                     Create New Category
@@ -135,7 +134,6 @@ const CreateCategoryModal: React.FC<CreateCategoryModalProps> = ({ isOpen, onClo
                     )}
                   </div>
 
-                  {/* Description */}
                   <div>
                     <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
                       Description
@@ -152,7 +150,6 @@ const CreateCategoryModal: React.FC<CreateCategoryModalProps> = ({ isOpen, onClo
                     )}
                   </div>
 
-                  {/* Type */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-3">
                       Category Type *
@@ -188,7 +185,6 @@ const CreateCategoryModal: React.FC<CreateCategoryModalProps> = ({ isOpen, onClo
                     )}
                   </div>
 
-                  {/* Color */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-3">
                       Color
@@ -220,7 +216,6 @@ const CreateCategoryModal: React.FC<CreateCategoryModalProps> = ({ isOpen, onClo
                     )}
                   </div>
 
-                  {/* Buttons */}
                   <div className="flex space-x-3 pt-6">
                     <button
                       type="button"

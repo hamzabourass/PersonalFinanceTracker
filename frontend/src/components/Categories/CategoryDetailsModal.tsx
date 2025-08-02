@@ -47,10 +47,8 @@ const CategoryDetailsModal: React.FC<CategoryDetailsModalProps> = ({
               leaveTo="opacity-0 scale-95"
             >
               <Dialog.Panel className="w-full max-w-lg transform overflow-hidden rounded-2xl bg-white p-8 text-left align-middle shadow-2xl transition-all border border-gray-100">
-                {/* Header */}
                 <div className="flex items-start justify-between mb-6">
                   <div className="flex items-center space-x-4">
-                    {/* Color indicator */}
                     <div 
                       className="w-16 h-16 rounded-xl flex items-center justify-center"
                       style={{ backgroundColor: `${category.color}15` }}
@@ -86,9 +84,7 @@ const CategoryDetailsModal: React.FC<CategoryDetailsModalProps> = ({
                   </button>
                 </div>
 
-                {/* Content */}
                 <div className="space-y-6">
-                  {/* Description */}
                   {category.description && (
                     <div>
                       <h3 className="text-sm font-medium text-gray-900 mb-2">Description</h3>
@@ -98,9 +94,7 @@ const CategoryDetailsModal: React.FC<CategoryDetailsModalProps> = ({
                     </div>
                   )}
 
-                  {/* Details Grid */}
                   <div className="grid grid-cols-2 gap-6">
-                    {/* Creation Date */}
                     <div className="bg-gray-50 p-4 rounded-lg">
                       <div className="flex items-center space-x-2 mb-2">
                         <CalendarIcon className="w-5 h-5 text-gray-400" />
@@ -114,7 +108,6 @@ const CategoryDetailsModal: React.FC<CategoryDetailsModalProps> = ({
                       </p>
                     </div>
 
-                    {/* Color */}
                     <div className="bg-gray-50 p-4 rounded-lg">
                       <div className="flex items-center space-x-2 mb-2">
                         <div 
@@ -129,7 +122,6 @@ const CategoryDetailsModal: React.FC<CategoryDetailsModalProps> = ({
                     </div>
                   </div>
 
-                  {/* Category ID (for developers/debugging) */}
                   <div className="bg-gray-50 p-4 rounded-lg">
                     <h3 className="text-sm font-medium text-gray-900 mb-2">Category ID</h3>
                     <p className="text-xs text-gray-500 font-mono break-all">
@@ -137,7 +129,6 @@ const CategoryDetailsModal: React.FC<CategoryDetailsModalProps> = ({
                     </p>
                   </div>
 
-                  {/* Usage Stats Placeholder */}
                   <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
                     <h3 className="text-sm font-medium text-blue-900 mb-2">Usage Statistics</h3>
                     <p className="text-sm text-blue-700">
@@ -146,7 +137,6 @@ const CategoryDetailsModal: React.FC<CategoryDetailsModalProps> = ({
                   </div>
                 </div>
 
-                {/* Footer Actions */}
                 <div className="flex justify-end space-x-3 pt-6 mt-6 border-t border-gray-200">
                   <button
                     onClick={onClose}
@@ -155,7 +145,6 @@ const CategoryDetailsModal: React.FC<CategoryDetailsModalProps> = ({
                     Close
                   </button>
                   
-                  {/* Future: Edit button */}
                   <button
                     disabled
                     className="px-6 py-2 text-sm font-medium text-gray-400 bg-gray-100 border border-gray-200 rounded-lg cursor-not-allowed"

@@ -13,15 +13,11 @@ const Layout: React.FC<LayoutProps> = ({ children, title }) => {
 
   return (
     <div className="h-screen bg-gray-50 flex overflow-hidden">
-      {/* Sidebar */}
       <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
-      {/* Main content */}
       <div className="flex-1 flex flex-col overflow-hidden lg:pl-72">
-        {/* Header - fixed at top */}
         <Header onMenuClick={() => setSidebarOpen(true)} title={title} />
 
-        {/* Page content - scrollable */}
         <main className="flex-1 overflow-y-auto">
           <div className="py-8 px-6 sm:px-8 lg:px-10">
             {children}
@@ -29,7 +25,6 @@ const Layout: React.FC<LayoutProps> = ({ children, title }) => {
         </main>
       </div>
 
-      {/* Toast Notifications */}
       <Toaster
         position="top-right"
         toastOptions={{

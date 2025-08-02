@@ -18,7 +18,6 @@ const CategoryCard: React.FC<CategoryCardProps> = ({ category, onClick }) => {
     >
       <div className="p-5">
         <div className="flex items-center">
-          {/* Color indicator */}
           <div className="flex-shrink-0">
             <div 
               className="w-10 h-10 rounded-full flex items-center justify-center"
@@ -31,7 +30,6 @@ const CategoryCard: React.FC<CategoryCardProps> = ({ category, onClick }) => {
             </div>
           </div>
           
-          {/* Category details */}
           <div className="ml-3 flex-1 min-w-0">
             <h3 className="text-sm font-medium text-gray-900 truncate group-hover:text-blue-600 transition-colors">
               {category.name}
@@ -46,7 +44,6 @@ const CategoryCard: React.FC<CategoryCardProps> = ({ category, onClick }) => {
             </p>
           </div>
           
-          {/* Type badge */}
           <div className="ml-2 flex-shrink-0">
             <span 
               className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${

@@ -23,12 +23,10 @@ const Categories: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<CategoryDto | null>(null);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
 
-  // Fetch categories on component mount
   useEffect(() => {
     fetchCategories();
   }, [fetchCategories]);
 
-  // Show error toast if there's an error
   useEffect(() => {
     if (categoriesError) {
       toast.error(categoriesError);
@@ -36,13 +34,11 @@ const Categories: React.FC = () => {
     }
   }, [categoriesError, resetCategoriesError]);
 
-  // Filter categories based on selected filter
   const filteredCategories = categories.filter(category => {
     if (selectedFilter === 'all') return true;
     return category.type === selectedFilter;
   });
 
-  // Count categories by type
   const incomeCount = categories.filter(c => c.type === TransactionType.Income).length;
   const expenseCount = categories.filter(c => c.type === TransactionType.Expense).length;
 
@@ -65,7 +61,6 @@ const Categories: React.FC = () => {
   return (
     <Layout>
       <div className="space-y-6">
-        {/* Page Header */}
         <div className="md:flex md:items-center md:justify-between">
           <div className="flex-1 min-w-0">
             <h1 className="text-3xl font-bold leading-7 text-gray-900 sm:text-4xl">
@@ -86,7 +81,6 @@ const Categories: React.FC = () => {
           </div>
         </div>
 
-        {/* Filter Tabs */}
         <div className="border-b border-gray-200">
           <div className="sm:hidden">
             <select
@@ -120,7 +114,6 @@ const Categories: React.FC = () => {
           </div>
         </div>
 
-        {/* Loading State */}
         {categoriesLoading && (
           <div className="flex justify-center items-center py-12">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
@@ -128,7 +121,6 @@ const Categories: React.FC = () => {
           </div>
         )}
 
-        {/* Categories Grid */}
         {!categoriesLoading && (
           <>
             {filteredCategories.length > 0 ? (
@@ -142,7 +134,6 @@ const Categories: React.FC = () => {
                 ))}
               </div>
             ) : (
-              // Empty State
               <div className="text-center py-12">
                 <TagIcon className="mx-auto h-12 w-12 text-gray-400" />
                 <h3 className="mt-2 text-sm font-medium text-gray-900">
@@ -169,13 +160,11 @@ const Categories: React.FC = () => {
         )}
       </div>
 
-      {/* Create Category Modal */}
       <CreateCategoryModal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
       />
 
-      {/* Category Details Modal */}
       <CategoryDetailsModal
         isOpen={isDetailsModalOpen}
         onClose={handleCloseDetailsModal}
