@@ -42,7 +42,7 @@ const TopSpendingChart: React.FC<TopSpendingChartProps> = ({
     // Convert to array and sort by amount
     return Array.from(categoryMap.values())
       .sort((a, b) => b.amount - a.amount)
-      .slice(0, 3); // Top 8 categories
+      .slice(0, 3); 
   }, [transactions]);
 
   if (loading) {
@@ -97,6 +97,7 @@ const TopSpendingChart: React.FC<TopSpendingChartProps> = ({
       </div>
 
       {/* Simple Bar Chart */}
+    <div className="h-64 mb-4 flex flex-col justify-center overflow-y-auto">
       <div className="space-y-4">
         {categorySpending.map((category, index) => {
           const percentage = (category.amount / maxAmount) * 100;
@@ -135,9 +136,9 @@ const TopSpendingChart: React.FC<TopSpendingChartProps> = ({
           );
         })}
       </div>
-
+    </div>
       {/* Summary */}
-      <div className="mt-6 pt-4 border-t border-gray-200">
+      <div className="mt-3 pt-3 border-t border-gray-200">
         <div className="grid grid-cols-3 gap-4 text-center">
           <div>
             <p className="text-sm text-gray-500">Total Spent</p>

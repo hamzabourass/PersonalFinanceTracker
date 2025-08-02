@@ -13,11 +13,11 @@ import { TransactionType } from '../types/api';
 import Layout from '../components/Layout';
 
 import QuickActions from '../components/Dashboard/QuickActions';
-import CategoryChart from '../components/Dashboard/CategoryChart';
 import RecentTransactions from '../components/Dashboard/RecentTransactions';
 import StatsCard from '../components/Dashboard/StatsCard';
 import WelcomeCard from '../components/Dashboard/WelcomeCard';
 import TopSpendingChart from '../components/Dashboard/TopSpendingChart';
+import MonthlyChart from '../components/Dashboard/MonthlyChart';
 
 const Dashboard: React.FC = () => {
   const { 
@@ -104,17 +104,18 @@ const Dashboard: React.FC = () => {
           />
         </div>
 
+        {/* Charts Row */}
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-          {/* Category Distribution Chart */}
-          <div className="xl:col-span-1">
-            <CategoryChart 
-              categories={categories}
-              loading={categoriesLoading}
+          {/* Monthly Income vs Expenses Chart */}
+          <div className="xl:col-span-2">
+            <MonthlyChart 
+              transactions={transactions}
+              loading={transactionsLoading}
             />
           </div>
 
           {/* Top Spending Categories Chart */}
-          <div className="xl:col-span-2">
+          <div className="xl:col-span-1">
             <TopSpendingChart 
               transactions={transactions}
               loading={transactionsLoading}
@@ -122,14 +123,17 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
 
+        {/* Main Content Row */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Recent Transactions */}
           <div className="lg:col-span-2">
             <RecentTransactions 
-              transactions={transactions.slice(0, 3)}
+              transactions={transactions.slice(0, 2)}
               loading={transactionsLoading}
             />
           </div>
 
+          {/* Quick Actions */}
           <div className="lg:col-span-1">
             <QuickActions 
               categoriesCount={totalCategories}
@@ -138,6 +142,7 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
 
+        {/* Financial Summary */}
         <div className="bg-gradient-to-br from-green-50 to-blue-50 rounded-xl p-6 border border-green-100">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Financial Summary</h3>
           {isLoading ? (
@@ -184,6 +189,7 @@ const Dashboard: React.FC = () => {
           )}
         </div>
 
+        {/* Getting Started Section - Only show when no data */}
         {!hasData && !isLoading && (
           <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-100 text-center">
             <div className="max-w-md mx-auto">
