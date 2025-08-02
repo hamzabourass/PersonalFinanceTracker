@@ -79,15 +79,15 @@ const CreateTransactionModal: React.FC<CreateTransactionModalProps> = ({ isOpen,
   const onSubmit = async (data: CreateTransactionForm) => {
     try {
       // Convert the date string to a proper ISO date with timezone
-      const dateObj = new Date(data.date + 'T00:00:00.000Z'); // Add time and UTC timezone
-      const isoDate = dateObj.toISOString(); // This ensures proper UTC format
+      const dateObj = new Date(data.date + 'T00:00:00.000Z');
+      const isoDate = dateObj.toISOString();
       
       const transactionData = {
         description: data.description,
         amount: Number(data.amount),
         currency: data.currency,
         type: data.type as TransactionType,
-        date: isoDate, // Send as ISO string with timezone
+        date: isoDate, 
         categoryId: data.categoryId,
         notes: data.notes || undefined
       };
@@ -251,9 +251,9 @@ const CreateTransactionModal: React.FC<CreateTransactionModalProps> = ({ isOpen,
                         className="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-4 py-3"
                       >
                         <option value="USD">USD</option>
-                        <option value="EUR">EUR</option>
+                        {/* <option value="EUR">EUR</option>
                         <option value="GBP">GBP</option>
-                        <option value="CAD">CAD</option>
+                        <option value="CAD">CAD</option> */}
                       </select>
                       {errors.currency && (
                         <p className="mt-2 text-sm text-red-600">{errors.currency.message}</p>
