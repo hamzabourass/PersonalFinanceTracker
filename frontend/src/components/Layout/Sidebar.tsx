@@ -32,14 +32,18 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
       to={item.href}
       className={`${
         isActive(item.href)
-          ? 'bg-blue-50 border-blue-500 text-blue-700'
-          : 'border-transparent text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-      } group flex items-center px-2 py-2 ${
+          ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-600'
+          : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
+      } group flex items-center px-4 py-3 ${
         mobile ? 'text-base' : 'text-sm'
-      } font-medium border-l-4 transition-colors`}
+      } font-medium transition-all duration-200 ease-in-out`}
       onClick={() => mobile && setSidebarOpen(false)}
     >
-      <item.icon className={`${mobile ? 'mr-4 h-6 w-6' : 'mr-3 h-5 w-5'}`} />
+      <item.icon 
+        className={`${mobile ? 'mr-4 h-6 w-6' : 'mr-3 h-5 w-5'} ${
+          isActive(item.href) ? 'text-blue-600' : 'text-gray-400 group-hover:text-gray-500'
+        } transition-colors duration-200`} 
+      />
       {item.name}
     </Link>
   );
@@ -49,15 +53,18 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
       {/* Mobile menu */}
       <div className={`fixed inset-0 flex z-40 lg:hidden ${sidebarOpen ? '' : 'hidden'}`}>
         {/* Overlay */}
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-75" onClick={() => setSidebarOpen(false)} />
+        <div 
+          className="fixed inset-0 bg-gray-600 bg-opacity-75 transition-opacity" 
+          onClick={() => setSidebarOpen(false)} 
+        />
         
         {/* Mobile sidebar */}
-        <div className="relative flex-1 flex flex-col max-w-xs w-full pt-5 pb-4 bg-white">
+        <div className="relative flex-1 flex flex-col max-w-xs w-full bg-white shadow-xl">
           {/* Close button */}
-          <div className="absolute top-0 right-0 -mr-12 pt-2">
+          <div className="absolute top-0 right-0 -mr-12 pt-4">
             <button
               type="button"
-              className="ml-1 flex items-center justify-center h-10 w-10 rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+              className="ml-1 flex items-center justify-center h-10 w-10 rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white bg-gray-600 hover:bg-gray-500 transition-colors"
               onClick={() => setSidebarOpen(false)}
             >
               <span className="sr-only">Close sidebar</span>
@@ -66,40 +73,43 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
           </div>
           
           {/* Mobile logo */}
-          <div className="flex-shrink-0 flex items-center px-4">
-            <h1 className="text-lg font-bold text-gray-900">Finance Tracker</h1>
+          <div className="flex-shrink-0 flex items-center px-6 py-6 border-b border-gray-200">
+            <h1 className="text-xl font-bold text-gray-900">Finance Tracker</h1>
           </div>
           
           {/* Mobile navigation */}
-          <nav className="mt-5 flex-shrink-0 h-full divide-y divide-gray-200 overflow-y-auto">
-            <div className="px-2 space-y-1">
-              {navigation.map((item) => (
-                <NavLink key={item.name} item={item} mobile />
-              ))}
-            </div>
+          <nav className="mt-6 flex-1 px-2 space-y-1 overflow-y-auto">
+            {navigation.map((item) => (
+              <NavLink key={item.name} item={item} mobile />
+            ))}
           </nav>
         </div>
       </div>
 
       {/* Desktop sidebar */}
-      <div className="hidden lg:flex lg:flex-shrink-0">
-        <div className="flex flex-col w-64">
-          <div className="flex flex-col flex-grow bg-white pt-5 pb-4 overflow-y-auto border-r border-gray-200">
+      <div className="hidden lg:flex lg:flex-shrink-0 lg:fixed lg:inset-y-0 lg:left-0 lg:z-30">
+        <div className="flex flex-col w-72">
+          <div className="flex flex-col flex-grow bg-white border-r border-gray-200 shadow-sm h-screen">
             {/* Desktop logo */}
-            <div className="flex items-center flex-shrink-0 px-4">
-              <Link to="/" className="text-xl font-bold text-gray-900">
+            <div className="flex items-center flex-shrink-0 px-6 py-6 border-b border-gray-200">
+              <Link to="/" className="text-xl font-bold text-gray-900 hover:text-blue-600 transition-colors">
                 Personal Finance Tracker
               </Link>
             </div>
             
             {/* Desktop navigation */}
-            <nav className="mt-8 flex-1 flex flex-col divide-y divide-gray-200 overflow-y-auto">
-              <div className="px-2 space-y-1">
-                {navigation.map((item) => (
-                  <NavLink key={item.name} item={item} />
-                ))}
-              </div>
+            <nav className="mt-8 flex-1 px-2 space-y-2 overflow-y-auto">
+              {navigation.map((item) => (
+                <NavLink key={item.name} item={item} />
+              ))}
             </nav>
+
+            {/* Footer section */}
+            <div className="flex-shrink-0 p-4 border-t border-gray-200">
+              <div className="text-xs text-gray-500 text-center">
+                © 2025 Finance Tracker
+              </div>
+            </div>
           </div>
         </div>
       </div>

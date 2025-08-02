@@ -5,13 +5,17 @@ import { TransactionType } from '../../types/api';
 
 interface CategoryCardProps {
   category: CategoryDto;
+  onClick?: () => void;
 }
 
-const CategoryCard: React.FC<CategoryCardProps> = ({ category }) => {
+const CategoryCard: React.FC<CategoryCardProps> = ({ category, onClick }) => {
   const isIncomeCategory = category.type === TransactionType.Income;
 
   return (
-    <div className="bg-white overflow-hidden shadow rounded-lg hover:shadow-md transition-shadow cursor-pointer group">
+    <div 
+      className="bg-white overflow-hidden shadow rounded-lg hover:shadow-md transition-shadow cursor-pointer group"
+      onClick={onClick}
+    >
       <div className="p-5">
         <div className="flex items-center">
           {/* Color indicator */}

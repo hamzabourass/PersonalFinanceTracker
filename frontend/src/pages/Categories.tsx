@@ -3,8 +3,10 @@ import { PlusIcon, TagIcon } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 import { useAppStore } from '../store';
 import { TransactionType } from '../types/api';
+import type { CategoryDto } from '../types/api';
 import CategoryCard from '../components/Categories/CategoryCard';
 import CreateCategoryModal from '../components/Categories/CreateCategoryModal';
+import CategoryDetailsModal from '../components/Categories/CategoryDetailsModal';
 import Layout from '../components/Layout';
 
 const Categories: React.FC = () => {
@@ -18,6 +20,8 @@ const Categories: React.FC = () => {
   
   const [selectedFilter, setSelectedFilter] = useState<'all' | TransactionType>('all');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<CategoryDto | null>(null);
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
 
   // Fetch categories on component mount
   useEffect(() => {
@@ -42,6 +46,16 @@ const Categories: React.FC = () => {
   const incomeCount = categories.filter(c => c.type === TransactionType.Income).length;
   const expenseCount = categories.filter(c => c.type === TransactionType.Expense).length;
 
+  const handleCategoryClick = (category: CategoryDto) => {
+    setSelectedCategory(category);
+    setIsDetailsModalOpen(true);
+  };
+
+  const handleCloseDetailsModal = () => {
+    setIsDetailsModalOpen(false);
+    setSelectedCategory(null);
+  };
+
   const filterTabs = [
     { id: 'all' as const, name: 'All Categories', count: categories.length },
     { id: TransactionType.Income, name: 'Income', count: incomeCount },
@@ -49,14 +63,14 @@ const Categories: React.FC = () => {
   ];
 
   return (
-    <Layout title="Categories">
+    <Layout>
       <div className="space-y-6">
         {/* Page Header */}
         <div className="md:flex md:items-center md:justify-between">
           <div className="flex-1 min-w-0">
-            <h2 className="text-3xl font-bold leading-7 text-gray-900 sm:text-4xl sm:truncate">
+            <h1 className="text-3xl font-bold leading-7 text-gray-900 sm:text-4xl">
               Categories
-            </h2>
+            </h1>
             <p className="mt-1 text-sm text-gray-500">
               Manage your income and expense categories
             </p>
@@ -64,9 +78,9 @@ const Categories: React.FC = () => {
           <div className="mt-4 flex md:mt-0 md:ml-4">
             <button
               onClick={() => setIsCreateModalOpen(true)}
-              className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+              className="inline-flex items-center px-6 py-3 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 transform hover:scale-105"
             >
-              <PlusIcon className="w-4 h-4 mr-2" />
+              <PlusIcon className="w-5 h-5 mr-2" />
               Add Category
             </button>
           </div>
@@ -97,7 +111,7 @@ const Categories: React.FC = () => {
                     selectedFilter === tab.id
                       ? 'border-blue-500 text-blue-600'
                       : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  } border-b-2 py-2 px-1 text-sm font-medium transition-colors`}
+                  } whitespace-nowrap border-b-2 py-2 px-1 text-sm font-medium transition-colors`}
                 >
                   {tab.name} ({tab.count})
                 </button>
@@ -118,9 +132,13 @@ const Categories: React.FC = () => {
         {!categoriesLoading && (
           <>
             {filteredCategories.length > 0 ? (
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {filteredCategories.map((category) => (
-                  <CategoryCard key={category.id} category={category} />
+                  <CategoryCard 
+                    key={category.id} 
+                    category={category} 
+                    onClick={() => handleCategoryClick(category)}
+                  />
                 ))}
               </div>
             ) : (
@@ -139,9 +157,9 @@ const Categories: React.FC = () => {
                 <div className="mt-6">
                   <button
                     onClick={() => setIsCreateModalOpen(true)}
-                    className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                    className="inline-flex items-center px-6 py-3 border border-transparent shadow-sm text-sm font-medium rounded-lg text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 transform hover:scale-105"
                   >
-                    <PlusIcon className="w-4 h-4 mr-2" />
+                    <PlusIcon className="w-5 h-5 mr-2" />
                     Add Category
                   </button>
                 </div>
@@ -155,6 +173,13 @@ const Categories: React.FC = () => {
       <CreateCategoryModal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
+      />
+
+      {/* Category Details Modal */}
+      <CategoryDetailsModal
+        isOpen={isDetailsModalOpen}
+        onClose={handleCloseDetailsModal}
+        category={selectedCategory}
       />
     </Layout>
   );

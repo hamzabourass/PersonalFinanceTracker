@@ -7,8 +7,6 @@ import { z } from 'zod';
 import toast from 'react-hot-toast';
 import { categoryApi } from '../../services/api';
 import { useAppStore } from '../../store';
-import type { CreateCategoryRequest } from '../../types/api';
-import { TransactionType } from '../../types/api';
 
 interface CreateCategoryModalProps {
   isOpen: boolean;
@@ -23,9 +21,11 @@ const createCategorySchema = z.object({
   description: z.string()
     .max(200, 'Description cannot exceed 200 characters')
     .optional(),
-  type: z.nativeEnum(TransactionType, {
-    errorMap: () => ({ message: 'Please select a category type' })
-  }),
+  type: z.string()
+    .transform((val) => parseInt(val))
+    .refine((val) => val === 1 || val === 2, {
+      message: 'Please select a category type'
+    }),
   color: z.string()
     .regex(/^#[0-9A-Fa-f]{6}$/, 'Please enter a valid hex color')
 });
@@ -51,7 +51,7 @@ const CreateCategoryModal: React.FC<CreateCategoryModalProps> = ({ isOpen, onClo
     resolver: zodResolver(createCategorySchema),
     defaultValues: {
       color: '#6366f1',
-      type: TransactionType.Expense
+      type: '2' // Default to Expense as string
     }
   });
 
@@ -88,7 +88,7 @@ const CreateCategoryModal: React.FC<CreateCategoryModalProps> = ({ isOpen, onClo
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-black bg-opacity-25" />
+          <div className="fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm" />
         </Transition.Child>
 
         <div className="fixed inset-0 overflow-y-auto">
@@ -102,131 +102,146 @@ const CreateCategoryModal: React.FC<CreateCategoryModalProps> = ({ isOpen, onClo
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+              <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-8 text-left align-middle shadow-2xl transition-all border border-gray-100">
                 {/* Header */}
-                <div className="flex items-center justify-between mb-4">
-                  <Dialog.Title className="text-lg font-medium leading-6 text-gray-900">
+                <div className="flex items-center justify-between mb-6">
+                  <Dialog.Title className="text-xl font-semibold leading-6 text-gray-900">
                     Create New Category
                   </Dialog.Title>
                   <button
                     onClick={handleClose}
-                    className="text-gray-400 hover:text-gray-600 transition-colors"
+                    className="text-gray-400 hover:text-gray-600 transition-colors p-1 rounded-full hover:bg-gray-100"
                   >
-                    <XMarkIcon className="h-5 w-5" />
+                    <XMarkIcon className="h-6 w-6" />
                   </button>
                 </div>
 
                 {/* Form */}
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                   {/* Category Name */}
                   <div>
-                    <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
                       Category Name *
                     </label>
                     <input
                       {...register('name')}
                       type="text"
                       id="name"
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                      className="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-4 py-3"
                       placeholder="e.g., Food & Dining"
                     />
                     {errors.name && (
-                      <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
+                      <p className="mt-2 text-sm text-red-600">{errors.name.message}</p>
                     )}
                   </div>
 
                   {/* Description */}
                   <div>
-                    <label htmlFor="description" className="block text-sm font-medium text-gray-700">
+                    <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
                       Description
                     </label>
                     <textarea
                       {...register('description')}
                       id="description"
-                      rows={2}
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                      rows={3}
+                      className="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-4 py-3"
                       placeholder="Brief description of this category"
                     />
                     {errors.description && (
-                      <p className="mt-1 text-sm text-red-600">{errors.description.message}</p>
+                      <p className="mt-2 text-sm text-red-600">{errors.description.message}</p>
                     )}
                   </div>
 
                   {/* Type */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">
+                    <label className="block text-sm font-medium text-gray-700 mb-3">
                       Category Type *
                     </label>
-                    <div className="mt-1 grid grid-cols-2 gap-2">
-                      <label className="flex items-center">
+                    <div className="grid grid-cols-2 gap-3">
+                      <label className="relative flex items-center p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
                         <input
                           {...register('type')}
                           type="radio"
-                          value={TransactionType.Income}
+                          value="1"
                           className="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300"
                         />
-                        <span className="ml-2 text-sm text-gray-700">Income</span>
+                        <div className="ml-3">
+                          <span className="block text-sm font-medium text-gray-700">Income</span>
+                          <span className="block text-xs text-gray-500">Money coming in</span>
+                        </div>
                       </label>
-                      <label className="flex items-center">
+                      <label className="relative flex items-center p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
                         <input
                           {...register('type')}
                           type="radio"
-                          value={TransactionType.Expense}
+                          value="2"
                           className="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300"
                         />
-                        <span className="ml-2 text-sm text-gray-700">Expense</span>
+                        <div className="ml-3">
+                          <span className="block text-sm font-medium text-gray-700">Expense</span>
+                          <span className="block text-xs text-gray-500">Money going out</span>
+                        </div>
                       </label>
                     </div>
                     {errors.type && (
-                      <p className="mt-1 text-sm text-red-600">{errors.type.message}</p>
+                      <p className="mt-2 text-sm text-red-600">{errors.type.message}</p>
                     )}
                   </div>
 
                   {/* Color */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">
+                    <label className="block text-sm font-medium text-gray-700 mb-3">
                       Color
                     </label>
-                    <div className="mt-1 flex items-center space-x-2">
-                      <div className="flex space-x-1">
+                    <div className="flex items-center space-x-3">
+                      <div className="flex flex-wrap gap-2">
                         {predefinedColors.map((color) => (
                           <button
                             key={color}
                             type="button"
                             onClick={() => setValue('color', color)}
-                            className={`w-6 h-6 rounded-full border-2 ${
-                              selectedColor === color ? 'border-gray-400' : 'border-gray-200'
+                            className={`w-8 h-8 rounded-full border-2 transition-all hover:scale-110 ${
+                              selectedColor === color ? 'border-gray-400 ring-2 ring-blue-200' : 'border-gray-200'
                             }`}
                             style={{ backgroundColor: color }}
                           />
                         ))}
                       </div>
-                      <input
-                        {...register('color')}
-                        type="color"
-                        className="w-8 h-8 rounded border border-gray-300"
-                      />
+                      <div className="border-l border-gray-200 pl-3">
+                        <input
+                          {...register('color')}
+                          type="color"
+                          className="w-10 h-10 rounded-lg border border-gray-300 cursor-pointer"
+                        />
+                      </div>
                     </div>
                     {errors.color && (
-                      <p className="mt-1 text-sm text-red-600">{errors.color.message}</p>
+                      <p className="mt-2 text-sm text-red-600">{errors.color.message}</p>
                     )}
                   </div>
 
                   {/* Buttons */}
-                  <div className="flex space-x-3 pt-4">
+                  <div className="flex space-x-3 pt-6">
                     <button
                       type="button"
                       onClick={handleClose}
-                      className="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                      className="flex-1 px-6 py-3 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
                     >
                       Cancel
                     </button>
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className="flex-1 px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="flex-1 px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-blue-700 border border-transparent rounded-lg hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
                     >
-                      {isSubmitting ? 'Creating...' : 'Create Category'}
+                      {isSubmitting ? (
+                        <span className="flex items-center justify-center">
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                          Creating...
+                        </span>
+                      ) : (
+                        'Create Category'
+                      )}
                     </button>
                   </div>
                 </form>
