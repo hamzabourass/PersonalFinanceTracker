@@ -1,7 +1,7 @@
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using PersonalFinanceTracker.Application.Interfaces;
-using PersonalFinanceTracker.Domain.Entities;
-using PersonalFinanceTracker.Domain.Enums;
+using PersonalFinanceTracker.Application.Commands;
+using PersonalFinanceTracker.Application.Queries;
 
 namespace PersonalFinanceTracker.API.Controllers;
 
@@ -9,33 +9,36 @@ namespace PersonalFinanceTracker.API.Controllers;
 [Route("api/[controller]")]
 public class CategoriesController : ControllerBase
 {
-    private readonly ICategoryRepository _categoryRepository;
+    private readonly IMediator _mediator;
 
-    public CategoriesController(ICategoryRepository categoryRepository)
+    public CategoriesController(IMediator mediator)
     {
-        _categoryRepository = categoryRepository;
+        _mediator = mediator;
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetCategories()
+    public async Task<IActionResult> GetCategories([FromQuery] GetCategoriesQuery query)
     {
-        var categories = await _categoryRepository.GetAllAsync();
+        var categories = await _mediator.Send(query);
         return Ok(categories);
     }
 
-    [HttpPost]
-    public async Task<IActionResult> CreateCategory([FromBody] CreateCategoryRequest request)
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetCategoryById(Guid id)
     {
-        var category = new Category(request.Name, request.Type, request.Description, request.Color);
-        var created = await _categoryRepository.AddAsync(category);
-        return CreatedAtAction(nameof(GetCategories), created);
+        var query = new GetCategoryByIdQuery(id);
+        var category = await _mediator.Send(query);
+        
+        if (category == null)
+            return NotFound($"Category with ID {id} not found");
+            
+        return Ok(category);
     }
-}
 
-public class CreateCategoryRequest
-{
-    public string Name { get; set; } = string.Empty;
-    public string? Description { get; set; }
-    public TransactionType Type { get; set; }
-    public string Color { get; set; } = "#6366f1";
+    [HttpPost]
+    public async Task<IActionResult> CreateCategory([FromBody] CreateCategoryCommand command)
+    {
+        var category = await _mediator.Send(command);
+        return CreatedAtAction(nameof(GetCategoryById), new { id = category.Id }, category);
+    }
 }

@@ -33,7 +33,12 @@ public class TransactionsController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetTransactionById(Guid id)
     {
-        // We'll create this query next if needed
-        return Ok($"Get transaction with ID: {id}");
+        var query = new GetTransactionByIdQuery(id);
+        var transaction = await _mediator.Send(query);
+        
+        if (transaction == null)
+            return NotFound($"Transaction with ID {id} not found");
+            
+        return Ok(transaction);
     }
 }
