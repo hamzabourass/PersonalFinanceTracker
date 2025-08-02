@@ -216,6 +216,7 @@ const CreateCategoryModal: React.FC<CreateCategoryModalProps> = ({ isOpen, onClo
                     )}
                   </div>
 
+                  {/* Buttons */}
                   <div className="flex space-x-3 pt-6">
                     <button
                       type="button"
