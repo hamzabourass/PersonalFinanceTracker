@@ -121,13 +121,13 @@ const CategoryDetailsModal: React.FC<CategoryDetailsModalProps> = ({
                       </p>
                     </div>
                   </div>
-
+{/* 
                   <div className="bg-gray-50 p-4 rounded-lg">
                     <h3 className="text-sm font-medium text-gray-900 mb-2">Category ID</h3>
                     <p className="text-xs text-gray-500 font-mono break-all">
                       {category.id}
                     </p>
-                  </div>
+                  </div> */}
 
                   <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
                     <h3 className="text-sm font-medium text-blue-900 mb-2">Usage Statistics</h3>
