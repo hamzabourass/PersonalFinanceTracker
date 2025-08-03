@@ -8,9 +8,14 @@ import type { TransactionDto } from '../../types/api';
 interface RecentTransactionsProps {
   transactions: TransactionDto[];
   loading: boolean;
+  onTransactionClick?: (transaction: TransactionDto) => void; // Add this prop
 }
 
-const RecentTransactions: React.FC<RecentTransactionsProps> = ({ transactions, loading }) => {
+const RecentTransactions: React.FC<RecentTransactionsProps> = ({ 
+  transactions, 
+  loading, 
+  onTransactionClick 
+}) => {
   if (loading) {
     return (
       <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
@@ -50,7 +55,15 @@ const RecentTransactions: React.FC<RecentTransactionsProps> = ({ transactions, l
       {transactions.length > 0 ? (
         <div className="space-y-4">
           {transactions.map((transaction) => (
-            <div key={transaction.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+            <div 
+              key={transaction.id} 
+              className={`flex items-center justify-between p-4 bg-gray-50 rounded-lg transition-colors ${
+                onTransactionClick 
+                  ? 'hover:bg-gray-100 cursor-pointer group' 
+                  : ''
+              }`}
+              onClick={() => onTransactionClick?.(transaction)}
+            >
               <div className="flex items-center space-x-3">
                 <div 
                   className="w-10 h-10 rounded-lg flex items-center justify-center"
@@ -62,7 +75,11 @@ const RecentTransactions: React.FC<RecentTransactionsProps> = ({ transactions, l
                   />
                 </div>
                 <div>
-                  <p className="font-medium text-gray-900">{transaction.description}</p>
+                  <p className={`font-medium text-gray-900 ${
+                    onTransactionClick ? 'group-hover:text-blue-600 transition-colors' : ''
+                  }`}>
+                    {transaction.description}
+                  </p>
                   <p className="text-sm text-gray-500">{transaction.category.name}</p>
                   <p className="text-xs text-gray-400">
                     {format(new Date(transaction.date), 'MMM d, yyyy')}
@@ -97,4 +114,5 @@ const RecentTransactions: React.FC<RecentTransactionsProps> = ({ transactions, l
     </div>
   );
 };
+
 export default RecentTransactions;

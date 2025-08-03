@@ -1,5 +1,5 @@
 // Updated Dashboard.tsx using proper component imports
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
   TagIcon, 
   CreditCardIcon, 
@@ -10,6 +10,7 @@ import {
 import { Link } from 'react-router-dom';
 import { useAppStore } from '../store';
 import { TransactionType } from '../types/api';
+import type { TransactionDto } from '../types/api';
 import Layout from '../components/Layout';
 
 import QuickActions from '../components/Dashboard/QuickActions';
@@ -18,6 +19,7 @@ import StatsCard from '../components/Dashboard/StatsCard';
 import WelcomeCard from '../components/Dashboard/WelcomeCard';
 import TopSpendingChart from '../components/Dashboard/TopSpendingChart';
 import MonthlyChart from '../components/Dashboard/MonthlyChart';
+import TransactionDetailsModal from '../components/Transactions/TransactionDetailsModal';
 
 const Dashboard: React.FC = () => {
   const { 
@@ -28,6 +30,10 @@ const Dashboard: React.FC = () => {
     transactionsLoading,
     fetchTransactions
   } = useAppStore();
+
+  // State for transaction details modal
+  const [selectedTransaction, setSelectedTransaction] = useState<TransactionDto | null>(null);
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
 
   useEffect(() => {
     fetchCategories();
@@ -54,6 +60,17 @@ const Dashboard: React.FC = () => {
   
   const hasData = totalCategories > 0 || totalTransactions > 0;
   const isLoading = categoriesLoading || transactionsLoading;
+
+  // Handler for transaction clicks
+  const handleTransactionClick = (transaction: TransactionDto) => {
+    setSelectedTransaction(transaction);
+    setIsDetailsModalOpen(true);
+  };
+
+  const handleCloseDetailsModal = () => {
+    setIsDetailsModalOpen(false);
+    setSelectedTransaction(null);
+  };
 
   return (
     <Layout title="Dashboard">
@@ -123,13 +140,13 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Main Content Row */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Recent Transactions */}
           <div className="lg:col-span-2">
             <RecentTransactions 
               transactions={transactions.slice(0, 2)}
               loading={transactionsLoading}
+              onTransactionClick={handleTransactionClick}
             />
           </div>
 
@@ -217,6 +234,13 @@ const Dashboard: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Transaction Details Modal */}
+      <TransactionDetailsModal
+        isOpen={isDetailsModalOpen}
+        onClose={handleCloseDetailsModal}
+        transaction={selectedTransaction}
+      />
     </Layout>
   );
 };

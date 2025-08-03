@@ -39,7 +39,7 @@ const QuickActions: React.FC<QuickActionsProps> = ({ categoriesCount, transactio
   ];
 
   return (
-    <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+    <div className="bg-white rounded-xl p-3.5 shadow-sm border border-gray-100">
       <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
       <div className="space-y-3">
         {actions.map((action) => (
