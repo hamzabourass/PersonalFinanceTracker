@@ -13,6 +13,11 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   api:
     build:
@@ -22,12 +27,30 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=PersonalFinanceDb;Username=postgres;Password=postgres
+      - Logging__LogLevel__Microsoft.EntityFrameworkCore.Database.Command=Warning
+      - Logging__LogLevel__Microsoft.EntityFrameworkCore.Query=Warning
+      - Logging__LogLevel__Microsoft.EntityFrameworkCore=Warning
+      - Logging__LogLevel__PersonalFinanceTracker=Information
     ports:
       - "5000:8080"
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     restart: unless-stopped
 
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: finance-frontend
+    ports:
+      - "3000:5173"
+    depends_on:
+      - api
+    restart: unless-stopped
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
 
 volumes:
   postgres_data:

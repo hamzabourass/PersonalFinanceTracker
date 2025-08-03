@@ -2,6 +2,7 @@ using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using PersonalFinanceTracker.Application.Behaviors;
+using PersonalFinanceTracker.Application.Services;
 using System.Reflection;
 
 namespace PersonalFinanceTracker.Application;
@@ -20,6 +21,7 @@ public static class ApplicationServiceExtensions
 
         services.AddValidatorsFromAssembly(assembly);
 
+        services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
         return services;
     }
 }

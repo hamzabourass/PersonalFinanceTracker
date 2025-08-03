@@ -75,12 +75,9 @@ const Dashboard: React.FC = () => {
   return (
     <Layout title="Dashboard">
       <div className="space-y-8">
-        {/* Welcome Section */}
         <WelcomeCard currentMonth={currentMonth} hasData={hasData} />
 
-        {/* Quick Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {/* Enhanced Total Categories with colored bubbles */}
           <StatsCard
             title="Total Categories"
             value={totalCategories}
@@ -133,9 +130,7 @@ const Dashboard: React.FC = () => {
           />
         </div>
 
-        {/* Charts Row */}
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-          {/* Monthly Income vs Expenses Chart */}
           <div className="xl:col-span-2">
             <MonthlyChart 
               transactions={transactions}
@@ -143,7 +138,6 @@ const Dashboard: React.FC = () => {
             />
           </div>
 
-          {/* Top Spending Categories Chart */}
           <div className="xl:col-span-1">
             <TopSpendingChart 
               transactions={transactions}
@@ -152,9 +146,7 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Main Content Row */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Recent Transactions */}
           <div className="lg:col-span-2">
             <RecentTransactions 
               transactions={transactions.slice(0, 5)}
@@ -163,7 +155,6 @@ const Dashboard: React.FC = () => {
             />
           </div>
 
-          {/* Quick Actions and Financial Summary */}
           <div className="lg:col-span-1">
             <QuickActions 
               categoriesCount={totalCategories}
@@ -181,7 +172,6 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Getting Started Section - Only show when no data */}
         {!hasData && !isLoading && (
           <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-100 text-center">
             <div className="max-w-md mx-auto">
@@ -210,7 +200,6 @@ const Dashboard: React.FC = () => {
         )}
       </div>
 
-      {/* Transaction Details Modal */}
       <TransactionDetailsModal
         isOpen={isDetailsModalOpen}
         onClose={handleCloseDetailsModal}

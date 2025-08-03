@@ -21,7 +21,6 @@ api.interceptors.response.use(
   }
 );
 
-// Category API
 export const categoryApi = {
   getAll: async (type?: TransactionType): Promise<CategoryDto[]> => {
     const params = type ? { type } : {};
@@ -52,7 +51,6 @@ export const categoryApi = {
   }
 };
 
-// Transaction API
 export const transactionApi = {
   getAll: async (params?: {
     take?: number;
