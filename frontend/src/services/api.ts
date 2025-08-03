@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { CategoryDto, TransactionDto, CreateCategoryRequest, CreateTransactionRequest, TransactionType } from '../types/api';
+import type { CategoryDto, TransactionDto, CreateCategoryRequest, CreateTransactionRequest, TransactionType, UpdateTransactionRequest, UpdateCategoryRequest } from '../types/api';
 
 const api = axios.create({
   baseURL: 'http://localhost:5000/api',
@@ -21,6 +21,7 @@ api.interceptors.response.use(
   }
 );
 
+// Category API
 export const categoryApi = {
   getAll: async (type?: TransactionType): Promise<CategoryDto[]> => {
     const params = type ? { type } : {};
@@ -37,8 +38,21 @@ export const categoryApi = {
     const response = await api.post<CategoryDto>('/categories', data);
     return response.data;
   },
+
+  update: async (id: string, data: UpdateCategoryRequest): Promise<CategoryDto> => {
+    const response = await api.put<CategoryDto>(`/categories/${id}`, {
+      ...data,
+      id
+    });
+    return response.data;
+  },
+
+  delete: async (id: string): Promise<void> => {
+    await api.delete(`/categories/${id}`);
+  }
 };
 
+// Transaction API
 export const transactionApi = {
   getAll: async (params?: {
     take?: number;
@@ -59,6 +73,20 @@ export const transactionApi = {
     const response = await api.post<TransactionDto>('/transactions', data);
     return response.data;
   },
+
+  update: async (id: string, data: UpdateTransactionRequest): Promise<TransactionDto> => {
+    const response = await api.put<TransactionDto>(`/transactions/${id}`, {
+      ...data,
+      id
+    });
+    return response.data;
+  },
+
+  delete: async (id: string): Promise<void> => {
+    await api.delete(`/transactions/${id}`);
+  }
 };
+
+
 
 export default api;

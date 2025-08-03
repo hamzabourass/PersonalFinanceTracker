@@ -1,44 +1,43 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useEffect } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import toast from 'react-hot-toast';
-import { categoryApi } from '../../services/api';
 import { useAppStore } from '../../store';
+import type { CategoryDto } from '../../types/api';
 
-interface CreateCategoryModalProps {
+interface EditCategoryModalProps {
   isOpen: boolean;
   onClose: () => void;
+  category: CategoryDto | null;
 }
 
-// Zod validation schema
-const createCategorySchema = z.object({
+const editCategorySchema = z.object({
   name: z.string()
     .min(1, 'Category name is required')
     .max(50, 'Category name cannot exceed 50 characters'),
   description: z.string()
     .max(200, 'Description cannot exceed 200 characters')
     .optional(),
-  type: z.string()
-    .transform((val) => parseInt(val))
-    .refine((val) => val === 1 || val === 2, {
-      message: 'Please select a category type'
-    }),
   color: z.string()
     .regex(/^#[0-9A-Fa-f]{6}$/, 'Please enter a valid hex color')
 });
 
-type CreateCategoryForm = z.infer<typeof createCategorySchema>;
+type EditCategoryForm = z.infer<typeof editCategorySchema>;
 
 const predefinedColors = [
   '#6366f1', '#8b5cf6', '#06b6d4', '#10b981', '#f59e0b',
   '#ef4444', '#ec4899', '#84cc16', '#f97316', '#3b82f6'
 ];
 
-const CreateCategoryModal: React.FC<CreateCategoryModalProps> = ({ isOpen, onClose }) => {
-  const { addCategory } = useAppStore();
+const EditCategoryModal: React.FC<EditCategoryModalProps> = ({ 
+  isOpen, 
+  onClose, 
+  category 
+}) => {
+  const { updateCategory } = useAppStore();
 
   const {
     register,
@@ -47,26 +46,42 @@ const CreateCategoryModal: React.FC<CreateCategoryModalProps> = ({ isOpen, onClo
     setValue,
     reset,
     formState: { errors, isSubmitting }
-  } = useForm<CreateCategoryForm>({
-    resolver: zodResolver(createCategorySchema),
+  } = useForm<EditCategoryForm>({
+    resolver: zodResolver(editCategorySchema),
     defaultValues: {
-      color: '#6366f1',
-      type: '2' // Default to Expense as string
+      name: '',
+      description: '',
+      color: '#6366f1'
     }
   });
 
   const selectedColor = watch('color');
 
-  const onSubmit = async (data: CreateCategoryForm) => {
+  // Update form when category changes
+  useEffect(() => {
+    if (category) {
+      reset({
+        name: category.name,
+        description: category.description || '',
+        color: category.color
+      });
+    }
+  }, [category, reset]);
+
+  const onSubmit = async (data: EditCategoryForm) => {
+    if (!category) return;
+
     try {
-      const newCategory = await categoryApi.create(data);
-      addCategory(newCategory);
-      toast.success('Category created successfully!');
-      reset();
+      await updateCategory(category.id, {
+        name: data.name,
+        description: data.description || undefined,
+        color: data.color
+      });
+      toast.success('Category updated successfully!');
       onClose();
     } catch (error: any) {
-      console.error('Failed to create category:', error);
-      const errorMessage = error.response?.data?.message || 'Failed to create category';
+      console.error('Failed to update category:', error);
+      const errorMessage = error.response?.data?.message || 'Failed to update category';
       toast.error(errorMessage);
     }
   };
@@ -75,6 +90,8 @@ const CreateCategoryModal: React.FC<CreateCategoryModalProps> = ({ isOpen, onClo
     reset();
     onClose();
   };
+
+  if (!category) return null;
 
   return (
     <Transition appear show={isOpen} as={Fragment}>
@@ -105,7 +122,7 @@ const CreateCategoryModal: React.FC<CreateCategoryModalProps> = ({ isOpen, onClo
               <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-8 text-left align-middle shadow-2xl transition-all border border-gray-100">
                 <div className="flex items-center justify-between mb-6">
                   <Dialog.Title className="text-xl font-semibold leading-6 text-gray-900">
-                    Create New Category
+                    Edit Category
                   </Dialog.Title>
                   <button
                     onClick={handleClose}
@@ -115,7 +132,6 @@ const CreateCategoryModal: React.FC<CreateCategoryModalProps> = ({ isOpen, onClo
                   </button>
                 </div>
 
-                {/* Form */}
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                   {/* Category Name */}
                   <div>
@@ -134,6 +150,7 @@ const CreateCategoryModal: React.FC<CreateCategoryModalProps> = ({ isOpen, onClo
                     )}
                   </div>
 
+                  {/* Description */}
                   <div>
                     <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
                       Description
@@ -150,41 +167,7 @@ const CreateCategoryModal: React.FC<CreateCategoryModalProps> = ({ isOpen, onClo
                     )}
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-3">
-                      Category Type *
-                    </label>
-                    <div className="grid grid-cols-2 gap-3">
-                      <label className="relative flex items-center p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
-                        <input
-                          {...register('type')}
-                          type="radio"
-                          value="1"
-                          className="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300"
-                        />
-                        <div className="ml-3">
-                          <span className="block text-sm font-medium text-gray-700">Income</span>
-                          <span className="block text-xs text-gray-500">Money coming in</span>
-                        </div>
-                      </label>
-                      <label className="relative flex items-center p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
-                        <input
-                          {...register('type')}
-                          type="radio"
-                          value="2"
-                          className="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300"
-                        />
-                        <div className="ml-3">
-                          <span className="block text-sm font-medium text-gray-700">Expense</span>
-                          <span className="block text-xs text-gray-500">Money going out</span>
-                        </div>
-                      </label>
-                    </div>
-                    {errors.type && (
-                      <p className="mt-2 text-sm text-red-600">{errors.type.message}</p>
-                    )}
-                  </div>
-
+                  {/* Color */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-3">
                       Color
@@ -216,6 +199,22 @@ const CreateCategoryModal: React.FC<CreateCategoryModalProps> = ({ isOpen, onClo
                     )}
                   </div>
 
+                  {/* Type Display (Read-only) */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Category Type
+                    </label>
+                    <div className="p-3 bg-gray-50 rounded-lg">
+                      <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                        category.type === 1 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                      }`}>
+                        {category.type === 1 ? 'Income' : 'Expense'}
+                      </span>
+                      <p className="text-xs text-gray-500 mt-1">Category type cannot be changed</p>
+                    </div>
+                  </div>
+
+                  {/* Buttons */}
                   <div className="flex space-x-3 pt-6">
                     <button
                       type="button"
@@ -232,10 +231,10 @@ const CreateCategoryModal: React.FC<CreateCategoryModalProps> = ({ isOpen, onClo
                       {isSubmitting ? (
                         <span className="flex items-center justify-center">
                           <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                          Creating...
+                          Updating...
                         </span>
                       ) : (
-                        'Create Category'
+                        'Update Category'
                       )}
                     </button>
                   </div>
@@ -249,4 +248,4 @@ const CreateCategoryModal: React.FC<CreateCategoryModalProps> = ({ isOpen, onClo
   );
 };
 
-export default CreateCategoryModal;
+export default EditCategoryModal;

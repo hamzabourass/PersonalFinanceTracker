@@ -46,3 +46,18 @@ export interface ApiError {
   message: string;
   errors?: Record<string, string[]>;
 }
+
+export interface UpdateCategoryRequest {
+  name: string;
+  description?: string;
+  color: string;
+}
+
+export interface UpdateTransactionRequest {
+  description: string;
+  amount: number;
+  currency: string;
+  date: string;
+  categoryId: string;
+  notes?: string;
+}
