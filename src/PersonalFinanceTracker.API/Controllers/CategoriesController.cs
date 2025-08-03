@@ -38,7 +38,54 @@ public class CategoriesController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateCategory([FromBody] CreateCategoryCommand command)
     {
-        var category = await _mediator.Send(command);
-        return CreatedAtAction(nameof(GetCategoryById), new { id = category.Id }, category);
+        try
+        {
+            var category = await _mediator.Send(command);
+            return CreatedAtAction(nameof(GetCategoryById), new { id = category.Id }, category);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateCategory(Guid id, [FromBody] UpdateCategoryCommand command)
+    {
+        if (id != command.Id)
+            return BadRequest("Route ID does not match command ID");
+
+        try
+        {
+            var category = await _mediator.Send(command);
+            return Ok(category);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteCategory(Guid id)
+    {
+        try
+        {
+            var command = new DeleteCategoryCommand(id);
+            var result = await _mediator.Send(command);
+            
+            if (result)
+                return NoContent();
+            
+            return NotFound($"Category with ID {id} not found");
+        }
+        catch (ArgumentException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(new { message = ex.Message });
+        }
     }
 }
