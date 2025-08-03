@@ -1,4 +1,3 @@
-// Updated Dashboard.tsx using proper component imports
 import React, { useEffect, useState } from 'react';
 import { 
   TagIcon, 
@@ -19,6 +18,7 @@ import StatsCard from '../components/Dashboard/StatsCard';
 import WelcomeCard from '../components/Dashboard/WelcomeCard';
 import TopSpendingChart from '../components/Dashboard/TopSpendingChart';
 import MonthlyChart from '../components/Dashboard/MonthlyChart';
+import FinancialSummary from '../components/Dashboard/FinancialSummary';
 import TransactionDetailsModal from '../components/Transactions/TransactionDetailsModal';
 
 const Dashboard: React.FC = () => {
@@ -80,13 +80,25 @@ const Dashboard: React.FC = () => {
 
         {/* Quick Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {/* Enhanced Total Categories with colored bubbles */}
           <StatsCard
             title="Total Categories"
             value={totalCategories}
             icon={TagIcon}
             iconBgColor="bg-blue-50"
             iconColor="text-blue-600"
-            subtitle={`${incomeCategories} Income • ${expenseCategories} Expense`}
+            bubbles={[
+              {
+                label: "Income",
+                value: incomeCategories,
+                color: "green"
+              },
+              {
+                label: "Expense", 
+                value: expenseCategories,
+                color: "red"
+              }
+            ]}
             loading={categoriesLoading}
           />
           
@@ -140,70 +152,33 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
 
+        {/* Main Content Row */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Recent Transactions */}
           <div className="lg:col-span-2">
             <RecentTransactions 
-              transactions={transactions.slice(0, 2)}
+              transactions={transactions.slice(0, 5)}
               loading={transactionsLoading}
               onTransactionClick={handleTransactionClick}
             />
           </div>
 
-          {/* Quick Actions */}
+          {/* Quick Actions and Financial Summary */}
           <div className="lg:col-span-1">
             <QuickActions 
               categoriesCount={totalCategories}
               transactionsCount={totalTransactions}
             />
+            
+            <FinancialSummary
+              totalIncome={totalIncome}
+              totalExpenses={totalExpenses}
+              totalCategories={totalCategories}
+              totalTransactions={totalTransactions}
+              hasData={hasData}
+              loading={isLoading}
+            />
           </div>
-        </div>
-
-        {/* Financial Summary */}
-        <div className="bg-gradient-to-br from-green-50 to-blue-50 rounded-xl p-6 border border-green-100">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Financial Summary</h3>
-          {isLoading ? (
-            <div className="space-y-3">
-              <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
-              <div className="h-4 bg-gray-200 rounded animate-pulse w-3/4"></div>
-              <div className="h-4 bg-gray-200 rounded animate-pulse w-1/2"></div>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              <div className="flex justify-between items-center">
-                <span className="text-gray-600">Net Balance</span>
-                <span className={`font-semibold ${
-                  (totalIncome - totalExpenses) >= 0 ? 'text-green-600' : 'text-red-600'
-                }`}>
-                  ${(totalIncome - totalExpenses).toFixed(2)}
-                </span>
-              </div>
-              
-              {totalIncome > 0 && (
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Expense Ratio</span>
-                  <span className="font-semibold text-blue-600">
-                    {((totalExpenses / totalIncome) * 100).toFixed(1)}%
-                  </span>
-                </div>
-              )}
-              
-              <div className="pt-2 border-t border-green-200">
-                {hasData ? (
-                  <p className="text-sm text-gray-600">
-                    {totalTransactions > 0 
-                      ? `You have ${totalTransactions} transactions across ${totalCategories} categories.`
-                      : `You have ${totalCategories} categories ready for transactions.`
-                    }
-                  </p>
-                ) : (
-                  <p className="text-sm text-gray-600">
-                    Start by creating categories and adding your first transactions.
-                  </p>
-                )}
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Getting Started Section - Only show when no data */}
