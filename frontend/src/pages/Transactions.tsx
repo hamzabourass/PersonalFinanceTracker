@@ -1,4 +1,3 @@
-// Updated src/pages/Transactions.tsx with client-side pagination
 import React, { useEffect, useState, useMemo } from 'react';
 import { PlusIcon, CreditCardIcon, FunnelIcon } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
@@ -35,7 +34,7 @@ const Transactions: React.FC = () => {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedType, setSelectedType] = useState<'all' | TransactionType>('all');
-  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]); // Changed to array
   const [dateRange, setDateRange] = useState({
     startDate: '',
     endDate: ''
@@ -70,8 +69,11 @@ const Transactions: React.FC = () => {
       filtered = filtered.filter(transaction => transaction.type === selectedType);
     }
 
-    if (selectedCategory) {
-      filtered = filtered.filter(transaction => transaction.category.id === selectedCategory);
+    // Updated to handle multiple categories
+    if (selectedCategories.length > 0) {
+      filtered = filtered.filter(transaction => 
+        selectedCategories.includes(transaction.category.id)
+      );
     }
 
     if (dateRange.startDate) {
@@ -91,7 +93,7 @@ const Transactions: React.FC = () => {
     filtered.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
     return filtered;
-  }, [transactions, searchTerm, selectedType, selectedCategory, dateRange]);
+  }, [transactions, searchTerm, selectedType, selectedCategories, dateRange]); // Updated dependency
 
   const totalItems = filteredAndSortedTransactions.length;
   const totalPages = Math.ceil(totalItems / pageSize);
@@ -101,15 +103,15 @@ const Transactions: React.FC = () => {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [selectedType, selectedCategory, dateRange, searchTerm, pageSize]);
+  }, [selectedType, selectedCategories, dateRange, searchTerm, pageSize]); // Updated dependency
 
-  const hasActiveFilters = searchTerm || selectedType !== 'all' || selectedCategory || 
-                          dateRange.startDate || dateRange.endDate;
+  const hasActiveFilters = searchTerm || selectedType !== 'all' || selectedCategories.length > 0 || 
+                          dateRange.startDate || dateRange.endDate; // Updated condition
 
   const clearFilters = () => {
     setSearchTerm('');
     setSelectedType('all');
-    setSelectedCategory('');
+    setSelectedCategories([]); // Clear array
     setDateRange({ startDate: '', endDate: '' });
     setCurrentPage(1);
   };
@@ -140,7 +142,7 @@ const Transactions: React.FC = () => {
     } else {
       setSelectedType(parseInt(type) as TransactionType);
     }
-    setSelectedCategory(''); // Clear category when type changes
+    setSelectedCategories([]); // Clear categories when type changes
   };
 
   const getFilterCounts = () => {
@@ -185,8 +187,13 @@ const Transactions: React.FC = () => {
               Filters
               {hasActiveFilters && (
                 <span className="ml-2 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-blue-100 bg-blue-600 rounded-full">
-                  {[searchTerm, selectedType !== 'all', selectedCategory, dateRange.startDate, dateRange.endDate]
-                    .filter(Boolean).length}
+                  {[
+                    searchTerm, 
+                    selectedType !== 'all', 
+                    selectedCategories.length > 0, // Updated
+                    dateRange.startDate, 
+                    dateRange.endDate
+                  ].filter(Boolean).length}
                 </span>
               )}
             </button>
@@ -281,8 +288,8 @@ const Transactions: React.FC = () => {
             onSearchChange={setSearchTerm}
             selectedType={selectedType}
             onTypeChange={handleTypeChange}
-            selectedCategory={selectedCategory}
-            onCategoryChange={setSelectedCategory}
+            selectedCategories={selectedCategories} // Updated prop
+            onCategoriesChange={setSelectedCategories} // Updated prop
             categories={categories}
             dateRange={dateRange}
             onDateRangeChange={setDateRange}
