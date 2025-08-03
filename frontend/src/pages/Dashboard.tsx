@@ -73,7 +73,7 @@ const Dashboard: React.FC = () => {
   };
 
   return (
-    <Layout title="Dashboard">
+    <Layout title="">
       <div className="space-y-8">
         <WelcomeCard currentMonth={currentMonth} hasData={hasData} />
 
