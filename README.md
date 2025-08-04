@@ -1,8 +1,13 @@
 # Personal Finance Tracker
 
+> A demonstration of Clean Architecture, CQRS, and Domain-Driven Design principles using .NET 9 and React.
+
 A full-stack personal finance management application built with .NET 9, React, and PostgreSQL, demonstrating clean architecture principles, CQRS pattern, and domain-driven design.
 
+![alt text](docs/dashboard.png)
 ## Architecture Overview
+
+![alt text](docs/Architecture.png)
 
 This application follows **Clean Architecture** principles with clear separation of concerns:
 
@@ -23,23 +28,30 @@ This application follows **Clean Architecture** principles with clear separation
 ## Technology Stack
 
 ### Backend
-- **.NET 9** - Latest framework version
-- **Entity Framework Core 9** - ORM with PostgreSQL provider
-- **MediatR** - CQRS and mediator pattern implementation
-- **FluentValidation** - Request validation
-- **PostgreSQL 15** - Primary database
-- **Swagger/OpenAPI** - API documentation
-- **Docker** - Containerization
+
+| Technology             | Description                               |
+|------------------------|-------------------------------------------|
+| **.NET 9**             | Latest framework version                  |
+| **Entity Framework Core 9** | ORM with PostgreSQL provider          |
+| **MediatR**            | CQRS and mediator pattern implementation  |
+| **FluentValidation**   | Request validation                        |
+| **PostgreSQL 15**      | Primary database                          |
+| **Swagger/OpenAPI**    | API documentation                         |
+| **Docker**             | Containerization                          |
 
 ### Frontend
-- **React 19** - UI library
-- **TypeScript** - Type safety
-- **Tailwind CSS** - Utility-first styling
-- **React Hook Form** - Form management
-- **Zod** - Schema validation
-- **React Router** - Client-side routing
-- **Axios** - HTTP client
-- **Recharts** - Data visualization
+
+| Technology          | Description                |
+|---------------------|----------------------------|
+| **React 19**        | UI library                 |
+| **TypeScript**      | Type safety                |
+| **Tailwind CSS**    | Utility-first styling      |
+| **React Hook Form** | Form management            |
+| **Zod**             | Schema validation          |
+| **React Router**    | Client-side routing        |
+| **Axios**           | HTTP client                |
+| **Recharts**        | Data visualization         |
+
 
 ## Features
 
@@ -67,11 +79,13 @@ This application follows **Clean Architecture** principles with clear separation
 
 ## Quick Start
 
-### Prerequisites
+### Option 1: Docker Setup
+
+#### Prerequisites
 - Docker and Docker Compose
 - Git
 
-### Running the Application
+#### Running the Application
 
 1. **Clone the repository**
    ```bash
@@ -95,6 +109,89 @@ The application will automatically:
 - Seed sample data
 - Start all services
 
+### Option 2: Local Development Setup
+
+#### Prerequisites
+- .NET 9 SDK
+- Node.js 20+ and npm
+- PostgreSQL 15+
+- Git
+
+#### Database Setup
+
+1. **Install PostgreSQL** and create a database:
+   ```sql
+   CREATE DATABASE PersonalFinanceDb;
+   ```
+
+2. **Update connection string** in `src/PersonalFinanceTracker.API/appsettings.json`:
+   ```json
+   {
+     "ConnectionStrings": {
+       "DefaultConnection": "Host=localhost;Port=5432;Database=PersonalFinanceDb;Username=your_username;Password=your_password"
+     }
+   }
+   ```
+
+#### Backend Setup
+
+1. **Navigate to the API project**
+   ```bash
+   cd src/PersonalFinanceTracker.API
+   ```
+
+2. **Restore packages and run migrations**
+   ```bash
+   dotnet restore
+   dotnet ef database update
+   ```
+
+3. **Run the API**
+   ```bash
+   dotnet run
+   ```
+
+The API will be available at:
+- HTTP: http://localhost:5133
+- Swagger UI: http://localhost:5133/swagger
+
+#### Frontend Setup
+
+1. **Open a new terminal and navigate to frontend**
+   ```bash
+   cd frontend
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Update API URL** in `frontend/src/services/api.ts`:
+   ```typescript
+   const api = axios.create({
+     baseURL: 'http://localhost:5133/api', // Update port if different
+   });
+   ```
+
+4. **Start the development server**
+   ```bash
+   npm run dev
+   ```
+
+The frontend will be available at: http://localhost:5173
+
+#### Running Tests
+
+**Backend Tests:**
+```bash
+# From the root directory
+dotnet test
+
+# Run specific test project
+dotnet test tests/PersonalFinanceTracker.Domain.Tests/
+dotnet test tests/PersonalFinanceTracker.Application.Tests/
+```
 ## Project Structure
 
 ```
@@ -117,7 +214,8 @@ PersonalFinanceTracker/
 │   │   └── Repositories/          # Repository implementations
 │   └── PersonalFinanceTracker.API/
 │       ├── Controllers/           # REST API controllers
-│       └── Migrations/            # Database migrations
+│       ├── Migrations/            # Database migrations
+|       └── Middleware/            # Middleware components (e.g., global exception handling)
 ├── frontend/
 │   ├── src/
 │   │   ├── components/            # React components
@@ -133,7 +231,7 @@ PersonalFinanceTracker/
 ```
 
 ## API Endpoints
-
+![alt text](docs/swagger.png)
 ### Categories
 - `GET /api/categories` - List all categories
 - `GET /api/categories/{id}` - Get category by ID
@@ -184,5 +282,14 @@ The application implements domain events for business logic decoupling:
 - **TransactionCreatedEventHandler** - Logs transaction creation
 - **TransactionUpdatedEventHandler** - Logs transaction updates
 - **TransactionCategoryChangedEventHandler** - Logs category changes
+
+### Domain Events in Action
+
+#### Transaction Creation Flow
+![Transaction API Call](docs/TXCreationAPICall.png)
+*API Request creates a new transaction*
+
+![Domain Event Logged](docs/TXeventCreation.png)  
+*TransactionCreatedEvent automatically fired and logged*
 
 Events are automatically dispatched after successful database saves and can be extended for notifications, analytics, or integration purposes.

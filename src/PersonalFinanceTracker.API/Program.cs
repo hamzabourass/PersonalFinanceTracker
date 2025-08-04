@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using PersonalFinanceTracker.API.Middleware;
 using PersonalFinanceTracker.Application;
 using PersonalFinanceTracker.Infrastructure;
 using PersonalFinanceTracker.Infrastructure.Data;
@@ -59,6 +60,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 app.UseCors("AllowAll");
 app.UseHttpsRedirection();
 app.UseAuthorization();
