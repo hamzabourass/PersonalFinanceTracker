@@ -4,7 +4,11 @@
 
 A full-stack personal finance management application built with .NET 9, React, and PostgreSQL, demonstrating clean architecture principles, CQRS pattern, and domain-driven design.
 
-![alt text](docs/dashboard.png)
+
+<p align="center">
+  <img src="docs/demo.gif" alt="App Demo"/>
+</p>
+
 ## Architecture Overview
 
 ![alt text](docs/Architecture.png)
